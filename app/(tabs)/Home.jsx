@@ -1,11 +1,14 @@
-import { FlatList, Platform, PlatformColor, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
+import { FlatList, Platform, PlatformColor, ScrollView, StatusBar, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native'
 import { Image } from 'expo-image';
 import React, { useEffect, useState } from 'react';
 import { DUMMY_RECIPES } from '../../components/dummyData';
 import { dummy_Category } from '../../components/dumyCategory';
+import { useRouter } from 'expo-router';
 
 const Home = () => {
     // const recipes = DUMMY_RECIPES;
+
+    const router = useRouter();
     
     const [categoryData, setCategoryData] = useState([]);
     const [activeCategory, setActiveCategory] = useState('Beef');
@@ -37,7 +40,7 @@ const Home = () => {
         try{
             const response =  await fetch (`https://themealdb.com/api/json/v1/1/filter.php?c=${categ}`);
             const data = await response.json();
-            console.log(data.meals);
+            // console.log(data.meals);
             setItemData(data.meals);
         }
         catch(err){
@@ -45,10 +48,21 @@ const Home = () => {
         }
     }
 
+    const isIos = Platform.OS === 'ios';
+    
+
 
 
     return (
         <View style={styles.mainView}>
+
+            {
+                isIos &&(
+                    <StatusBar
+                    barStyle='dark-content'
+                    />
+                )
+            }
             <View style={{marginTop: Platform.OS === 'ios' ? 48 : 32, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between'}}>
                 <Text style={styles.hiTxt}>Hi, Dear!</Text>
                 <View style={{height: 36, width: 36, borderRadius: "50%", overflow: 'hidden'}}>
@@ -185,10 +199,19 @@ const Home = () => {
                                             if (index % 2 !== 0) return null;
                                             const isTall = index % 4 === 0; 
                                             return (
-                                                <View key={recipe.idMeal} style={styles.itemWrapper}>
-                                                    <Image source={{ uri: recipe.strMealThumb }} style={[styles.itemsPic, { height: isTall ? 280 : 200 }]} />
-                                                    <Text numberOfLines={1} style={styles.itemTitle}>{recipe.strMeal}</Text>
-                                                </View>
+                                                <TouchableOpacity key={recipe.idMeal}  onPress={()=> router.push({
+                                                    pathname: '../DetailsScreen',
+                                                    params: { id : recipe.idMeal }
+                                                })} > 
+                                                    <View  style={styles.itemWrapper}>
+                                                        <Image source={{ uri: recipe.strMealThumb }} style={[styles.itemsPic, { height: isTall ? 280 : 200 }]} 
+                                                            cachePolicy='disk'
+                                                            transition={200}
+                                                            placeholder="L6PZf6ayfQay~qj[ayj[ayfQfQfQ"
+                                                        />
+                                                        <Text numberOfLines={1} style={styles.itemTitle}>{recipe.strMeal}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
                                             );
                                         })}
                                     </View>
@@ -199,17 +222,20 @@ const Home = () => {
                                             if (index % 2 === 0) return null;
                                             const isTall = (index + 1) % 4 === 0;
                                             return (
-                                                <View key={recipe.idMeal} style={styles.itemWrapper}>
-                                                    <Image source={{ uri: recipe.strMealThumb }} style={[styles.itemsPic, { height: isTall ? 280 : 200 }]} 
-                                                    
-                                                    // contentFit='contain'
-                                                    cachePolicy='disk'
-                                                    transition={200}
-                                                    placeholder="L6PZf6ayfQay~qj[ayj[ayfQfQfQ"
-                                                    
-                                                    />
-                                                    <Text numberOfLines={1} style={styles.itemTitle}>{recipe.strMeal}</Text>
-                                                </View>
+                                                <TouchableOpacity key={recipe.idMeal}  onPress={()=> router.push({
+                                                    pathname: '../DetailsScreen',
+                                                    params: { id : recipe.idMeal }
+                                                })} >
+                                                    <View style={styles.itemWrapper}>
+                                                        <Image source={{ uri: recipe.strMealThumb }} style={[styles.itemsPic, { height: isTall ? 280 : 200 }]} 
+                                                        cachePolicy='disk'
+                                                        transition={200}
+                                                        placeholder="L6PZf6ayfQay~qj[ayj[ayfQfQfQ"
+                                                        
+                                                        />
+                                                        <Text numberOfLines={1} style={styles.itemTitle}>{recipe.strMeal}</Text>
+                                                    </View>
+                                                </TouchableOpacity>
                                             );
                                         })}
                                     </View>
